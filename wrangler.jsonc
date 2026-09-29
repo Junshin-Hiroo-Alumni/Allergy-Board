@@ -1,7 +1,6 @@
 {
-  "$schema": "node_modules/wrangler/config-schema.json",
-  "name": "allergy-board",
-  "compatibility_date": "2026-09-30",
-  // 静的アセットのみ配信（Worker スクリプトなし）
-  "assets": { "directory": "./dist" }
+	"$schema": "node_modules/wrangler/config-schema.json",
+	"name": "allergy-board",
+	"compatibility_date": "2026-09-30",
+	"assets": { "directory": "./dist" }
 }

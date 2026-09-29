@@ -18,14 +18,14 @@ export const FONTS = [
   { family: 'Dela Gothic One', label: 'デラゴシックワン' },
 ]
 
-/** 特定原材料等28品目（表示順）。先頭 MANDATORY_COUNT 件が表示義務のある特定原材料 */
+/** 特定原材料等29品目（表示順）。先頭 MANDATORY_COUNT 件が表示義務のある特定原材料 */
 export const ALLERGENS = [
-  'えび', 'かに', 'くるみ', '小麦', 'そば', '卵', '乳', '落花生',
-  'アーモンド', 'あわび', 'いか', 'いくら', 'オレンジ', 'カシューナッツ', 'キウイフルーツ',
+  'えび', 'カシューナッツ', 'かに', 'くるみ', '小麦', 'そば', '卵', '乳', '落花生',
+  'アーモンド', 'あわび', 'いか', 'いくら', 'オレンジ', 'キウイフルーツ',
   '牛肉', 'ごま', 'さけ', 'さば', '大豆', '鶏肉', 'バナナ', '豚肉', 'マカダミアナッツ',
-  'もも', 'やまいも', 'りんご', 'ゼラチン',
+  'もも', 'やまいも', 'りんご', 'ゼラチン', 'ピスタチオ',
 ]
-export const MANDATORY_COUNT = 8
+export const MANDATORY_COUNT = 9
 
 /** 下部の一覧での表記 */
 export const footerLabel = (name: string) => (name === '落花生' ? '落花生（ピーナッツ）' : name)
@@ -40,7 +40,7 @@ export const createDefaultState = (): AppState => ({
     scale: 1,
     showPrice: true,
     showFooter: true,
-    title: '含まれるアレルゲン(特定28品目のうち)',
+    title: '含まれるアレルゲン(特定29品目のうち)',
     noCrossText: '(製造工程において他品目の混入なし)',
     crossSuffix: 'と同設備で製造',
   },

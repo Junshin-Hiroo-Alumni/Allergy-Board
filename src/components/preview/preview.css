@@ -81,10 +81,6 @@
   overflow-wrap: anywhere;
 }
 
-.blk-main--none {
-  font-size: calc(var(--u) * 8);
-}
-
 .blk-sub {
   margin-left: calc(var(--u) * 9);
   font-size: calc(var(--u) * 5.4);

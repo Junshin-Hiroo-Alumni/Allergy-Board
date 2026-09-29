@@ -7,13 +7,10 @@ interface Props {
 }
 
 export function ItemBlock({ item, settings }: Props) {
-  const none = item.contained.length === 0
   return (
     <div className="blk">
       <div className="blk-label">{itemLabel(item, settings.showPrice) || '　'}</div>
-      <div className={none ? 'blk-main blk-main--none' : 'blk-main'}>
-        {none ? 'なし' : item.contained.join('、')}
-      </div>
+      <div className="blk-main">{item.contained.length ? item.contained.join('、') : 'なし'}</div>
       <div className="blk-sub">{crossNote(item, settings)}</div>
     </div>
   )

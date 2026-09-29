@@ -16,7 +16,7 @@ export const FONTS = [
   { family: 'Yusei Magic', label: '油性マジック' },
   { family: 'Hachi Maru Pop', label: 'はちまるポップ' },
   { family: 'Dela Gothic One', label: 'デラゴシックワン' },
-] as const
+]
 
 /** 特定原材料等28品目（表示順）。先頭 MANDATORY_COUNT 件が表示義務のある特定原材料 */
 export const ALLERGENS = [
@@ -24,7 +24,7 @@ export const ALLERGENS = [
   'アーモンド', 'あわび', 'いか', 'いくら', 'オレンジ', 'カシューナッツ', 'キウイフルーツ',
   '牛肉', 'ごま', 'さけ', 'さば', '大豆', '鶏肉', 'バナナ', '豚肉', 'マカダミアナッツ',
   'もも', 'やまいも', 'りんご', 'ゼラチン',
-] as const
+]
 export const MANDATORY_COUNT = 8
 
 /** 下部の一覧での表記 */

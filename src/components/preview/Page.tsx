@@ -7,21 +7,21 @@ interface Props {
   settings: Settings
   geometry: PageGeometry
   children: ReactNode
-  pageNo?: number
-  totalPages?: number
+  /** 右下に出すページ表記（例: "1 / 3"）。単一ページなら省略 */
+  pageLabel?: string
   /** 高さを内容に合わせる（ページ分割のための計測用） */
   autoHeight?: boolean
 }
 
-export function Page({ settings, geometry: g, children, pageNo, totalPages, autoHeight }: Props) {
+export function Page({ settings, geometry: g, children, pageLabel, autoHeight }: Props) {
   const style = {
     '--font': `"${settings.font}"`,
     '--bar': settings.color,
     '--s': settings.scale,
-    width: `${g.width}mm`,
     '--page-h': `${g.height}mm`,
-    ...(autoHeight && { height: 'auto' }),
+    width: `${g.width}mm`,
     padding: `${g.padTop}mm ${g.padX}mm ${g.padBottom}mm`,
+    ...(autoHeight && { height: 'auto' }),
   } as CSSProperties
 
   return (
@@ -38,11 +38,7 @@ export function Page({ settings, geometry: g, children, pageNo, totalPages, auto
           </div>
         </div>
       )}
-      {totalPages && totalPages > 1 && (
-        <div className="page-num">
-          {pageNo} / {totalPages}
-        </div>
-      )}
+      {pageLabel && <div className="page-num">{pageLabel}</div>}
     </section>
   )
 }

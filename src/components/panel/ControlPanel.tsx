@@ -5,6 +5,7 @@ import { printDocument } from '../../lib/print'
 import type { Action } from '../../state/reducer'
 import type { AppState } from '../../types'
 import { ItemList } from './ItemList'
+import { PolicyPanel } from './PolicyPanel'
 import { DesignSettings, TextSettings } from './SettingsForm'
 import './panel.css'
 
@@ -22,6 +23,7 @@ export function ControlPanel({ state, dispatch }: Props) {
           <Tabs.Trigger value="items">商品 ({items.length})</Tabs.Trigger>
           <Tabs.Trigger value="design">デザイン</Tabs.Trigger>
           <Tabs.Trigger value="text">文言</Tabs.Trigger>
+          <Tabs.Trigger value="policy">ポリシー</Tabs.Trigger>
         </Tabs.List>
 
         <div className="panel-scroll">
@@ -33,6 +35,9 @@ export function ControlPanel({ state, dispatch }: Props) {
           </Tabs.Content>
           <Tabs.Content value="text">
             <TextSettings settings={settings} dispatch={dispatch} />
+          </Tabs.Content>
+          <Tabs.Content value="policy">
+            <PolicyPanel />
           </Tabs.Content>
         </div>
       </Tabs.Root>

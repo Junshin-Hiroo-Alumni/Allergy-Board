@@ -4,24 +4,46 @@ import { Badge, Flex, IconButton, Tabs, Text, TextField } from '@radix-ui/themes
 import type { Dispatch } from 'react'
 import { formatPrice } from '../../lib/format'
 import type { Action } from '../../state/reducer'
-import type { Item } from '../../types'
+import type { AllergenKind, Item } from '../../types'
 import { AllergenToggleGroup } from './AllergenToggleGroup'
+
+/** アレルゲン選択タブの定義（含まれる／同設備で製造） */
+const KINDS: { kind: AllergenKind; tab: string; badgeColor: 'gray' | 'orange'; hint: string }[] = [
+  { kind: 'contained', tab: '含まれる', badgeColor: 'gray', hint: '選んだ順にプレビューへ表示されます。' },
+  {
+    kind: 'cross',
+    tab: '同設備で製造',
+    badgeColor: 'orange',
+    hint: '混入の可能性があるもの。「含まれる」に選んだ品目は自動で外れます。',
+  },
+]
 
 interface Props {
   item: Item
   index: number
   showPrice: boolean
   dispatch: Dispatch<Action>
-  onDuplicated: (newId: string) => void
+  onDuplicate: () => void
 }
 
-/** 折りたたみ時の要約（「含」「同」それぞれの先頭数件） */
-const summarize = (label: string, list: string[]) => (list.length ? `${label} ${list.join('・')}` : '')
-
-export function ItemCard({ item, index, showPrice, dispatch, onDuplicated }: Props) {
+export function ItemCard({ item, index, showPrice, dispatch, onDuplicate }: Props) {
   const { id } = item
   const price = showPrice ? formatPrice(item.price) : ''
-  const summary = [summarize('含', item.contained), summarize('同設備', item.cross)].filter(Boolean).join('　')
+  // 折りたたみ時の要約行
+  const summary =
+    [
+      item.contained.length && `含 ${item.contained.join('・')}`,
+      item.cross.length && `同設備 ${item.cross.join('・')}`,
+    ]
+      .filter(Boolean)
+      .join('　') || 'アレルゲン未選択'
+
+  const actions = [
+    { label: '上へ', icon: <ArrowUpIcon />, run: () => dispatch({ type: 'moveItem', id, dir: -1 }) },
+    { label: '下へ', icon: <ArrowDownIcon />, run: () => dispatch({ type: 'moveItem', id, dir: 1 }) },
+    { label: '複製', icon: <CopyIcon />, run: onDuplicate },
+    { label: '削除', icon: <TrashIcon />, run: () => dispatch({ type: 'removeItem', id }), color: 'red' as const },
+  ]
 
   return (
     <Accordion.Item value={id} className="item">
@@ -41,7 +63,7 @@ export function ItemCard({ item, index, showPrice, dispatch, onDuplicated }: Pro
                 )}
               </span>
               <Text size="1" color="gray" className="item-summary">
-                {summary || 'アレルゲン未選択'}
+                {summary}
               </Text>
             </span>
             <ChevronDownIcon className="item-chevron" aria-hidden />
@@ -75,62 +97,38 @@ export function ItemCard({ item, index, showPrice, dispatch, onDuplicated }: Pro
 
           <Tabs.Root defaultValue="contained">
             <Tabs.List size="2">
-              <Tabs.Trigger value="contained">
-                含まれる <Badge color="gray" variant="solid" highContrast ml="1">{item.contained.length}</Badge>
-              </Tabs.Trigger>
-              <Tabs.Trigger value="cross">
-                同設備で製造 <Badge color="orange" variant="solid" ml="1">{item.cross.length}</Badge>
-              </Tabs.Trigger>
+              {KINDS.map(({ kind, tab, badgeColor }) => (
+                <Tabs.Trigger key={kind} value={kind}>
+                  {tab}{' '}
+                  <Badge color={badgeColor} variant="solid" highContrast={kind === 'contained'} ml="1">
+                    {item[kind].length}
+                  </Badge>
+                </Tabs.Trigger>
+              ))}
             </Tabs.List>
             <Flex pt="3">
-              <Tabs.Content value="contained">
-                <AllergenToggleGroup
-                  variant="contained"
-                  aria-label="含まれるアレルゲン"
-                  value={item.contained}
-                  onChange={values => dispatch({ type: 'setAllergens', id, kind: 'contained', values })}
-                />
-                <Text as="p" size="1" color="gray" mt="2">
-                  選んだ順にプレビューへ表示されます。
-                </Text>
-              </Tabs.Content>
-              <Tabs.Content value="cross">
-                <AllergenToggleGroup
-                  variant="cross"
-                  aria-label="同設備で製造するアレルゲン"
-                  value={item.cross}
-                  onChange={values => dispatch({ type: 'setAllergens', id, kind: 'cross', values })}
-                />
-                <Text as="p" size="1" color="gray" mt="2">
-                  混入の可能性があるもの。「含まれる」に選んだ品目は自動で外れます。
-                </Text>
-              </Tabs.Content>
+              {KINDS.map(({ kind, tab, hint }) => (
+                <Tabs.Content key={kind} value={kind}>
+                  <AllergenToggleGroup
+                    kind={kind}
+                    label={tab}
+                    value={item[kind]}
+                    onChange={values => dispatch({ type: 'setAllergens', id, kind, values })}
+                  />
+                  <Text as="p" size="1" color="gray" mt="2">
+                    {hint}
+                  </Text>
+                </Tabs.Content>
+              ))}
             </Flex>
           </Tabs.Root>
 
           <Flex gap="2" justify="end">
-            <IconButton size="2" variant="soft" color="gray" aria-label="上へ" onClick={() => dispatch({ type: 'moveItem', id, dir: -1 })}>
-              <ArrowUpIcon />
-            </IconButton>
-            <IconButton size="2" variant="soft" color="gray" aria-label="下へ" onClick={() => dispatch({ type: 'moveItem', id, dir: 1 })}>
-              <ArrowDownIcon />
-            </IconButton>
-            <IconButton
-              size="2"
-              variant="soft"
-              color="gray"
-              aria-label="複製"
-              onClick={() => {
-                const newId = crypto.randomUUID()
-                dispatch({ type: 'duplicateItem', id, newId })
-                onDuplicated(newId)
-              }}
-            >
-              <CopyIcon />
-            </IconButton>
-            <IconButton size="2" variant="soft" color="red" aria-label="削除" onClick={() => dispatch({ type: 'removeItem', id })}>
-              <TrashIcon />
-            </IconButton>
+            {actions.map(({ label, icon, run, color }) => (
+              <IconButton key={label} size="2" variant="soft" color={color ?? 'gray'} aria-label={label} onClick={run}>
+                {icon}
+              </IconButton>
+            ))}
           </Flex>
         </Flex>
       </Accordion.Content>

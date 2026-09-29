@@ -189,3 +189,14 @@
   color: var(--accent-contrast);
   font-weight: 700;
 }
+
+/* ---------- ポリシー ---------- */
+.policy-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  margin: 0;
+  padding-left: 1.25em;
+  font-size: var(--font-size-2);
+  line-height: 1.6;
+}

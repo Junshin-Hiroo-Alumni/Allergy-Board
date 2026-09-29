@@ -10,5 +10,5 @@ export const itemLabel = (item: Item, showPrice: boolean) => {
   return price ? `${item.name}(${price})` : item.name
 }
 
-export const crossNote = (item: Item, s: Pick<Settings, 'noCrossText' | 'crossSuffix'>) =>
-  item.cross.length ? `(${item.cross.join('、')} ${s.crossSuffix})` : s.noCrossText
+export const crossNote = (item: Item, settings: Settings) =>
+  item.cross.length ? `(${item.cross.join('、')} ${settings.crossSuffix})` : settings.noCrossText

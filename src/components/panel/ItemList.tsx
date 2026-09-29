@@ -21,6 +21,11 @@ export function ItemList({ items, showPrice, dispatch }: Props) {
     dispatch({ type: 'addItem', id })
     setOpenId(id)
   }
+  const duplicate = (id: string) => {
+    const newId = crypto.randomUUID()
+    dispatch({ type: 'duplicateItem', id, newId })
+    setOpenId(newId)
+  }
 
   return (
     <Flex direction="column" gap="3">
@@ -38,7 +43,7 @@ export function ItemList({ items, showPrice, dispatch }: Props) {
             index={i}
             showPrice={showPrice}
             dispatch={dispatch}
-            onDuplicated={setOpenId}
+            onDuplicate={() => duplicate(item.id)}
           />
         ))}
       </Accordion.Root>

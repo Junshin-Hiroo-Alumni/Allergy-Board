@@ -1,7 +1,7 @@
 import { useLayoutEffect, useRef, useState } from 'react'
 import { useFitZoom } from '../../hooks/useFitZoom'
 import { useFontVersion } from '../../hooks/useFontVersion'
-import { getGeometry, MM_TO_PX } from '../../lib/geometry'
+import { GEOMETRY, MM_TO_PX } from '../../lib/geometry'
 import { outerHeight, paginate } from '../../lib/paginate'
 import type { Item, Settings } from '../../types'
 import { ItemBlock } from './ItemBlock'
@@ -17,7 +17,7 @@ interface Props {
 }
 
 export function PreviewPane({ settings, items }: Props) {
-  const geometry = getGeometry(settings.orientation)
+  const geometry = GEOMETRY[settings.orientation]
   const containerRef = useRef<HTMLDivElement>(null)
   const measureRef = useRef<HTMLDivElement>(null)
   const [groups, setGroups] = useState<number[][]>([[]])
@@ -41,7 +41,7 @@ export function PreviewPane({ settings, items }: Props) {
     <main className="preview" ref={containerRef}>
       <div className="preview-pages" style={{ zoom }}>
         {groups.map((indexes, p) => (
-          <Page key={p} settings={settings} geometry={geometry} pageNo={p + 1} totalPages={total}>
+          <Page key={p} settings={settings} geometry={geometry} pageLabel={total > 1 ? `${p + 1} / ${total}` : undefined}>
             {indexes.map(i => items[i] && <ItemBlock key={items[i].id} item={items[i]} settings={settings} />)}
           </Page>
         ))}

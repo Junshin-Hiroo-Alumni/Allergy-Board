@@ -11,7 +11,8 @@ export interface PageGeometry {
   padBottom: number
 }
 
-export const getGeometry = (orientation: Orientation): PageGeometry =>
-  orientation === 'landscape'
-    ? { width: 297, height: 210, padX: 15, padTop: 10, padBottom: 10 }
-    : { width: 210, height: 297, padX: 12, padTop: 10, padBottom: 10 }
+/** 定数にしておくことで、参照が安定し useEffect の依存に使える */
+export const GEOMETRY: Record<Orientation, PageGeometry> = {
+  landscape: { width: 297, height: 210, padX: 15, padTop: 10, padBottom: 10 },
+  portrait: { width: 210, height: 297, padX: 12, padTop: 10, padBottom: 10 },
+}

@@ -1,4 +1,3 @@
-import { createDefaultState } from '../constants'
 import type { AllergenKind, AppState, Item, Settings } from '../types'
 
 export type Action =
@@ -22,6 +21,9 @@ export const newItem = (init: Partial<Item> = {}): Item => ({
 
 const OTHER: Record<AllergenKind, AllergenKind> = { contained: 'cross', cross: 'contained' }
 
+const mapItem = (items: Item[], id: string, fn: (item: Item) => Item) => items.map(i => (i.id === id ? fn(i) : i))
+
+/** id はUI側で採番して渡す（reducer を純粋に保ち、追加直後の商品を開けるようにするため） */
 export function reducer(state: AppState, action: Action): AppState {
   const { items } = state
   switch (action.type) {
@@ -30,21 +32,16 @@ export function reducer(state: AppState, action: Action): AppState {
     case 'addItem':
       return { ...state, items: [...items, newItem({ id: action.id })] }
     case 'updateItem':
-      return { ...state, items: items.map(i => (i.id === action.id ? { ...i, ...action.patch } : i)) }
-    case 'setAllergens':
+      return { ...state, items: mapItem(items, action.id, i => ({ ...i, ...action.patch })) }
+    case 'setAllergens': {
       // 同じアレルゲンを「含む」と「同設備」の両方に入れない
+      const { kind, values } = action
+      const other = OTHER[kind]
       return {
         ...state,
-        items: items.map(i =>
-          i.id !== action.id
-            ? i
-            : {
-                ...i,
-                [action.kind]: action.values,
-                [OTHER[action.kind]]: i[OTHER[action.kind]].filter(a => !action.values.includes(a)),
-              },
-        ),
+        items: mapItem(items, action.id, i => ({ ...i, [kind]: values, [other]: i[other].filter(a => !values.includes(a)) })),
       }
+    }
     case 'moveItem': {
       const from = items.findIndex(i => i.id === action.id)
       const to = from + action.dir
@@ -56,28 +53,13 @@ export function reducer(state: AppState, action: Action): AppState {
     case 'duplicateItem': {
       const from = items.findIndex(i => i.id === action.id)
       if (from < 0) return state
-      const src = items[from]
-      const copy = newItem({ ...src, id: action.newId, contained: [...src.contained], cross: [...src.cross] })
+      // 配列は常に新規作成して更新するので、コピー元と共有しても安全
+      const copy = { ...items[from], id: action.newId }
       return { ...state, items: [...items.slice(0, from + 1), copy, ...items.slice(from + 1)] }
     }
     case 'removeItem':
       return { ...state, items: items.filter(i => i.id !== action.id) }
     case 'clearItems':
       return { ...state, items: [] }
-  }
-}
-
-/** 保存データを現行スキーマに合わせて読み込む（欠落キーは既定値で補う） */
-export function loadState(raw: string | null): AppState {
-  const base = createDefaultState()
-  if (!raw) return base
-  try {
-    const saved = JSON.parse(raw) as Partial<AppState>
-    return {
-      settings: { ...base.settings, ...saved.settings },
-      items: Array.isArray(saved.items) ? saved.items.map(i => newItem(i)) : base.items,
-    }
-  } catch {
-    return base
   }
 }

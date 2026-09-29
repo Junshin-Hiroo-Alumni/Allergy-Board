@@ -1,14 +1,5 @@
 import { useEffect, useState } from 'react'
-
-/** 指定フォントの読み込みを完了させる（失敗しても続行） */
-export async function ensureFontLoaded(font: string, sample = 'あア亜含') {
-  try {
-    await document.fonts.load(`700 16px "${font}"`, sample)
-    await document.fonts.ready
-  } catch {
-    /* フォールバックフォントで続行 */
-  }
-}
+import { ensureFontLoaded } from '../lib/fonts'
 
 /**
  * フォントの読み込みが完了するたびに増える値を返す。

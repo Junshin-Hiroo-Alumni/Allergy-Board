@@ -9,6 +9,7 @@ interface Props {
   dispatch: Dispatch<Action>
 }
 
+/** 「デザイン」タブの1行（ラベル + 部品）。行の高さは CSS(.field-row) でそろえる */
 function Field({ label, children }: { label: string; children: ReactNode }) {
   return (
     <Flex align="center" gap="3" className="field-row">
@@ -22,11 +23,26 @@ function Field({ label, children }: { label: string; children: ReactNode }) {
   )
 }
 
-const useSet = (dispatch: Dispatch<Action>) => (patch: Partial<Settings>) => dispatch({ type: 'settings', patch })
+/** 「文言」タブの入力欄（ラベルが上） */
+function TextInput({ label, value, onChange, note }: { label: string; value: string; onChange: (v: string) => void; note?: string }) {
+  return (
+    <Flex direction="column" gap="1">
+      <Text size="2" weight="medium">
+        {label}
+      </Text>
+      <TextField.Root size="3" value={value} onChange={e => onChange(e.target.value)} />
+      {note && (
+        <Text size="1" color="gray">
+          {note}
+        </Text>
+      )}
+    </Flex>
+  )
+}
 
 /** 「デザイン」タブ */
 export function DesignSettings({ settings, dispatch }: Props) {
-  const set = useSet(dispatch)
+  const set = (patch: Partial<Settings>) => dispatch({ type: 'settings', patch })
   return (
     <Flex direction="column" gap="2">
       <Field label="向き">
@@ -90,24 +106,17 @@ export function DesignSettings({ settings, dispatch }: Props) {
 
 /** 「文言」タブ */
 export function TextSettings({ settings, dispatch }: Props) {
-  const set = useSet(dispatch)
+  const set = (patch: Partial<Settings>) => dispatch({ type: 'settings', patch })
   return (
     <Flex direction="column" gap="4">
-      <Flex direction="column" gap="1">
-        <Text size="2" weight="medium">タイトル</Text>
-        <TextField.Root size="3" value={settings.title} onChange={e => set({ title: e.target.value })} />
-      </Flex>
-      <Flex direction="column" gap="1">
-        <Text size="2" weight="medium">混入なしの注記</Text>
-        <TextField.Root size="3" value={settings.noCrossText} onChange={e => set({ noCrossText: e.target.value })} />
-      </Flex>
-      <Flex direction="column" gap="1">
-        <Text size="2" weight="medium">混入ありの語尾</Text>
-        <TextField.Root size="3" value={settings.crossSuffix} onChange={e => set({ crossSuffix: e.target.value })} />
-        <Text size="1" color="gray">
-          「(◯◯、◯◯ {settings.crossSuffix})」の形で表示されます。
-        </Text>
-      </Flex>
+      <TextInput label="タイトル" value={settings.title} onChange={title => set({ title })} />
+      <TextInput label="混入なしの注記" value={settings.noCrossText} onChange={noCrossText => set({ noCrossText })} />
+      <TextInput
+        label="混入ありの語尾"
+        value={settings.crossSuffix}
+        onChange={crossSuffix => set({ crossSuffix })}
+        note={`「(◯◯、◯◯ ${settings.crossSuffix})」の形で表示されます。`}
+      />
     </Flex>
   )
 }

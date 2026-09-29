@@ -17,3 +17,8 @@ bun run lint     # oxlint
 - **ページ分割**: 非表示の計測用ページで各商品ブロックの実高さを測り、`paginate()` で詰める（`PreviewPane.tsx`）。
 - **印刷 CSS**: 画面用のレスポンシブ規則は `@media screen` に限定すること（印刷時に当たると用紙がずれる）。
 - アレルゲン28品目は `ALLERGENS`。表示基準が改定されたらここを更新する。
+
+---
+
+PDFデザインの原作者: [KohkiAwata](https://github.com/KohkiAwata)
+

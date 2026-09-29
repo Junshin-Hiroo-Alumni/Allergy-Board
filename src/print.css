@@ -1,0 +1,40 @@
+/* 印刷（PDF出力）: 用紙だけを出力する。各コンポーネントのCSSより後に読み込むこと（main.tsx） */
+@page {
+  margin: 0;
+}
+
+@media print {
+  html,
+  body,
+  #root {
+    height: auto;
+  }
+  .app {
+    display: block;
+    height: auto;
+  }
+  .panel,
+  .preview-measure {
+    display: none !important;
+  }
+  .preview {
+    height: auto;
+    padding: 0;
+    overflow: visible;
+    background: none;
+  }
+  .preview-pages {
+    display: block;
+    zoom: 1 !important;
+  }
+  .page {
+    /* 用紙高さちょうどだと丸め誤差で次ページへ溢れるため少し詰める */
+    height: calc(var(--page-h) - 0.5mm);
+    break-inside: avoid;
+    break-after: page;
+    box-shadow: none;
+  }
+  .page:last-child {
+    break-after: auto;
+  }
+}
